@@ -27,6 +27,7 @@
     "init": "^0.1.2",
     "npx": "^10.2.2",
     "postcss": "^8.5.3",
+    "react-router-dom": "^7.4.0",
     "tailwindcss": "^4.0.15",
     "vite": "^6.2.0"
   }
