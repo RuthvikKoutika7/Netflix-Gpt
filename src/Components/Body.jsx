@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { addUser, removeUser } from "../Utils/userSlice";
 import { auth } from "../Utils/firebase";
 import { useEffect } from "react";
+import Profile from "./Profile";
 
 const Body = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,11 @@ const Body = () => {
       path: "/browse",
       element: <Browse />,
     },
+    {
+      path: "/profile",
+      element: <Profile />,
+    },
+
   ]);
 
   useEffect(()=>{
@@ -25,8 +31,8 @@ const Body = () => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
-        const { uid, email, displayName } = user;
-        dispatch(addUser({ uid: uid, email: email, displayName: displayName }));
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(addUser({ uid: uid, email: email, displayName: displayName, photoURL: photoURL }));
       } else {
         // User is signed out
         dispatch(removeUser());

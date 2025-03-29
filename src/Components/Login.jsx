@@ -1,13 +1,16 @@
 import { useRef, useState } from "react";
-import { LOGIN_BG_IMG } from "../Utils/Constants";
+import { LOGIN_BG_IMG, RUTHVIK_LOGO } from "../Utils/Constants";
 import Header from "./Header";
 import { checkDataIsValid } from "../Utils/Validate";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "../Utils/firebase";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../Utils/userSlice";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
@@ -16,6 +19,7 @@ const Login = () => {
   const email = useRef(null);
   const password = useRef(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const toggleIsSignIn = () => {
     setIsSignInForm(!isSignInForm);
@@ -40,8 +44,21 @@ const Login = () => {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
+          updateProfile(user, {
+            displayName: fullName.current.value, photoURL: RUTHVIK_LOGO
+          }).then(() => {
+            // Profile updated!
+            const { uid, email, displayName, photoURL } = auth.currentUser;
+            dispatch(addUser({ uid: uid, email: email, displayName: displayName, photoURL: photoURL }));
+            navigate("/browse");
+            // ...
+          }).catch((error) => {
+            // An error occurred
+            setErrorMessage(error.message);
+            // ...
+          });
           console.log(user);
-          navigate("/browse");
+          //navigate("/browse");
 
         })
         .catch((error) => {
@@ -60,8 +77,8 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log(user);
           navigate("/browse");
+          
           // ...
         })
         .catch((error) => {
