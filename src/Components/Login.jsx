@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { LOGIN_BG_IMG, RUTHVIK_LOGO } from "../Utils/Constants";
+import { BG_IMG, RUTHVIK_LOGO } from "../Utils/Constants";
 import Header from "./Header";
 import { checkDataIsValid } from "../Utils/Validate";
 import {
@@ -50,16 +50,13 @@ const Login = () => {
             // Profile updated!
             const { uid, email, displayName, photoURL } = auth.currentUser;
             dispatch(addUser({ uid: uid, email: email, displayName: displayName, photoURL: photoURL }));
-            navigate("/browse");
             // ...
           }).catch((error) => {
             // An error occurred
             setErrorMessage(error.message);
             // ...
           });
-          console.log(user);
-          //navigate("/browse");
-
+          
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -77,7 +74,7 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          navigate("/browse");
+          
           
           // ...
         })
@@ -93,7 +90,7 @@ const Login = () => {
     <div>
       <Header />
       <div className="absolute">
-        <img alt="bg-img" src={LOGIN_BG_IMG} className="w-full" />
+        <img alt="bg-img" src={BG_IMG} className="w-full" />
       </div>
 
       <form

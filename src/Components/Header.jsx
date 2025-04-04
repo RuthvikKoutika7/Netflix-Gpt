@@ -1,16 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NETFLIX_LOGO, USER_LOGO } from "../Utils/Constants";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { removeUser } from "../Utils/userSlice";
-import { signOut } from "firebase/auth";
+import { Link, useNavigate } from "react-router-dom";
+import { addUser, removeUser } from "../Utils/userSlice";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../Utils/firebase";
+//import { ChevronDownIcon } from '@heroicons/react/20/solid'
+
 
 const Header = () => {
   const [userOptions, setUserOptions] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+
+  useEffect(()=>{
+   const unSubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(addUser({ uid: uid, email: email, displayName: displayName, photoURL: photoURL }));
+        navigate("/browse");
+      } else {
+        // User is signed out
+        dispatch(removeUser());
+        navigate("/");
+      }
+    });
+    // unSubscribe fn will be called when component unmounts!!
+    return ()=> unSubscribe();
+  },[])
 
   const userDropDown = () => {
     setUserOptions(!userOptions);
@@ -23,7 +43,6 @@ const Header = () => {
     signOut(auth)
       .then(() => {
         // Sign-out successful.
-        navigate("/");
       })
       .catch((error) => {
         // An error happened.
@@ -41,43 +60,46 @@ const Header = () => {
             className="w-12 h-12 my-6 rounded-lg"
             onClick={userDropDown}
           />
+          
         )}
-
+        <div className="">
         {userOptions && (
-          <div className="absolute left-0 mt-2 w-40 bg-white border rounded-md shadow-lg">
-            <ul className="py-2">
+          <div className="relative inline-block text-left ">
+            <div className=" w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
+            <ul className=" ">
               <li>
                 <button
-                  className=" w-full text-left px-4 py-2 hover:bg-gray-100"
+                  className=" w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
-                    navigate("/browse");
+                    //navigate("/browse");
                   }}
                 >
                   Home
                 </button>
               </li>
-              <li>
+              <li><Link to="/profile">
                 <button
-                  className=" w-full text-left px-4 py-2 hover:bg-gray-100"
-                  onClick={() => {
-                    navigate("/profile");
-                  }}
+                  className=" w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 >
                   Profile
-                </button>
+                </button></Link>
               </li>
 
               <li>
                 <button
-                  className=" w-full text-left px-4 py-2 hover:bg-gray-100"
+                  className=" w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer "
                   onClick={handleSignOut}
                 >
                   Logout
                 </button>
               </li>
             </ul>
+            </div>
           </div>
         )}
+        </div>
+
+        
       </div>
     </div>
   );

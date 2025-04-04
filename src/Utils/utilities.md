@@ -1,0 +1,1 @@
+div - left-0 mt-2 w-40 bg-white border rounded-md shadow-lg
